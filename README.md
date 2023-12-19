@@ -58,9 +58,10 @@ Correlation Coefficients: an artifact from my initial attempts at devising an al
 
 Despite moving on from that method, the concept, of calculating a coefficient for each column and re-ordering based on that, was here to stay. Now, it is a measure of how many don't cares, 'X's, there are in each column, and if there aren't any, it represents whether the values in a column are homogeneous or not. The reason behind the first point, is that by pushing the column with the most 'X's to the very end, we are minimising the amount of re-ordering we'll have to do in future passes and maximising the chance that we'll have a chain of 'X's at the end of more branches to come.\
 The truth is, that actually, it doesn't matter what order the columns are in, as long as:
-> If a homogenous column* exists, it should _always_ be split on.
 
-*a column that contains only '0's or only '1's, since this reduces the complexity of the tree (an unnecessary sub-tree doesn't need to be created)
+==If a homogenous column exists, it should _always_ be split on.==
+
+A homogenous column being a column that contains only '0's or only '1's, since this reduces the complexity of the tree (an unnecessary sub-tree doesn't need to be created).
 
 #### Sidenote
 Having an 'X' as the first character in a re-ordered `bval` is something I hadn't anticipated when first writing this, it required me to implement a fix just before uploading this project to GitHub (it's now been 2 years since I wrote the original code). It's something that's only possible when _every_ column has at least one don't care ('X') in it. It's an undesirable but unavoidable consequence of being able to collapse too many `fvals` (another reason to re-order the columns): it is the one exception to the permanence of the collapsing done by `simplifyFvals()`, since it represents a string that holds redundancy, but must now be re-expanded to be sent down to the correct sub-trees. Fortunately, this doesn't ruin the optimality of the algorithm, since the only reason a string would be re-expanded is if that column absolutely _had_ to be at the front, i.e. if we were to split on a different column we would have to re-expand a greater than or equal number of strings.
