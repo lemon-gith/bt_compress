@@ -78,14 +78,21 @@ std::string ranNonFval(const int &length, std::vector<std::string> &fvals){
 
 int main(){
   //user-defined values
+  bool read_from_txt = false;
+  // ?
   int length = 15;
   int no_of_fvals = 1000;
-  bool read_from_txt = false;
+  // :
+  std::string txt_location = "values.txt";
+  // ;
+  bool print_tree = false;
+  bool run_bin_test = false;
 
+  // automated main program
   std::vector<std::string> values;
   if (read_from_txt){
     std::ifstream infile;
-    infile.open("values.txt");
+    infile.open(txt_location);
 
     if (!infile.is_open()){
       std::cout << "error opening file" << std::endl;
@@ -110,14 +117,6 @@ int main(){
     }
   }
 
-  #pragma region manual construction
-  /*BNode* bt_root;
-  bt_root = nodeCons("x5", nodeCons("x2", nodeCons("x1", nodeCons("0"), nodeCons("x4", nodeCons("1"), nodeCons("x3", nodeCons("1"), nodeCons("0")))), nodeCons("x3", nodeCons("1"), nodeCons("0"))), nodeCons("x1", nodeCons("x3", nodeCons("0"), nodeCons("x4", nodeCons("1"), nodeCons("0"))), nodeCons("0")));
-  rec_print_bt(bt_root);
-
-  full_bin_test(bt_root);*/
-  #pragma endregion
-
   std::cout << "max: " << (pow(2, values[0].length() + 1) - 1) << " nodes :0" << std::endl;
 
   BoolTree ft2(values);
@@ -133,10 +132,24 @@ int main(){
     // this should print "1"
   }
 
-  std::cout << "behold, the tree: \n" << std::endl;
+  if (print_tree){
+    std::cout << "behold, the tree: \n" << std::endl;
+    
+    BNode* beetroot = ft2.showRoot();
+    
+    rec_print_bt(beetroot);
+    std::cout << std::endl;
+  }
 
-  BNode* beetroot = ft2.showRoot();
-  //rec_print_bt(beetroot);
-  std::cout << std::endl;
-  //full_bin_test(beetroot, length);
+  if (run_bin_test){
+    std::cout << std::endl;
+    std::cout << "now running a full check of which fvals are represented by the tree:\n" << std::endl;
+
+    BNode* beetroot = ft2.showRoot();
+    
+    full_bin_test(beetroot, length);
+    std::cout << std::endl;
+  }
+
+  return 0;
 }
