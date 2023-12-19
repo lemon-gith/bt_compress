@@ -4,7 +4,6 @@
 #include <numeric>
 #include <unordered_set>
 #include <stdexcept>
-#include <iostream> //TODO: remove when done debugging
 
 //Restriction: can use any and only headers from the C++ standard library, except the algorithm library
 
@@ -118,20 +117,15 @@ public:
         cocos.push_back(xCounter);
       }
       else{
-        bool diff = false;
+        bool diff = 0;
 
         for (int branch = 1; (branch < vals.size()) && (!diff); branch++){
           if (vals[branch - 1][col] != vals[branch][col]){
-            diff = true;
+            diff = 1;
           }
         }
 
-        if (diff){
-          cocos.push_back(0);
-        }
-        else{
-          cocos.push_back(1);
-        }
+        cocos.push_back(diff);
       }
     }
     return cocos;
@@ -149,7 +143,7 @@ public:
   }
   static bool ordered(const std::vector<int> &cocos){
     int curr_coco_val = 1;
-    for (int coco : cocos){
+    for (const int &coco : cocos){
       if (coco > curr_coco_val){
         return false;
       }
@@ -167,6 +161,7 @@ public:
       mBvals = std::move(vals);
     }
     else{
+      // TODO: can a reservation initialisation be performed here?
       std::vector<int> new_order{};
       new_order.reserve(cocos.size());
 
@@ -280,7 +275,8 @@ BNode* constructBT(Builder &Cob){
   SplitVals data = Cob.pathSplit();
 
   Cob.delete_();
-
+  
+  // TODO: Check if this 'malfunction' is now possible with path split allowing splitting on 'X'
   if (data.l_vals.empty()){  // for both l_vals and r_vals, would take a simplifyFvals() malfunction
     Builder Rob(data.seq_vals, data.r_vals);
     return nodeCons(data.curr_node_val, nullptr, constructBT(Rob));
