@@ -59,7 +59,7 @@ Correlation Coefficients: an artifact from my initial attempts at devising an al
 Despite moving on from that method, the concept, of calculating a coefficient for each column and re-ordering based on that, was here to stay. Now, it is a measure of how many don't cares, 'X's, there are in each column, and if there aren't any, it represents whether the values in a column are homogeneous or not. The reason behind the first point, is that by pushing the column with the most 'X's to the very end, we are minimising the amount of re-ordering we'll have to do in future passes and maximising the chance that we'll have a chain of 'X's at the end of more branches to come.\
 The truth is, that actually, it doesn't matter what order the columns are in, as long as:
 
-==If a homogenous column exists, it should _always_ be split on.==
+> If a homogenous column exists, it should _always_ be split on.
 
 A homogenous column being a column that contains only '0's or only '1's, since this reduces the complexity of the tree (an unnecessary sub-tree doesn't need to be created).
 
