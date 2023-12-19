@@ -242,12 +242,10 @@ public:
 
     std::string trolley;
     for (std::string &branch : mBvals){
-      trolley = "";
-      for (int i = 1; i < mLength; i++){
-        trolley.append(std::string(1, branch[i]));
-      }
+      // drop first character, that's just to decide where to send the rest
+      trolley = branch.substr(1, branch.size()-1);
 
-      // if it's an 'X', I have to split it up, 
+      // if it's an 'X', I have to split it up,
       // since succeeding values clearly aren't 'X', else it wouldn't be in here
 
       if ((branch[0] == '0') || (branch[0] == 'X')){
