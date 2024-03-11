@@ -29,7 +29,7 @@ The three key concepts:
 ### Key Terms
 | name | expanded | description |
 | --- | --- | --- |
-| `fvals` | functional values | input values to each sub-tree |
+| `fvals` | functional values | input values to build the tree from |
 | `rvals` | reduced values | temporary value-vector that has one column removed (for matching) |
 | `svals` | simplified values | `fvals`, but with similar values collapsed using don't cares ('X') |
 | `bvals` | build values | essentially `svals`, but with reordered columns: used for construction |
