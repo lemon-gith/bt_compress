@@ -114,10 +114,10 @@ And if there's anything you feel to be missing or if there's a very similar solu
 ---
 
 ## TODOs
-TODO4: take a look at bottom of license and deal with that stuff :p\
-TODO5: rewrite confusing names in bt\
-TODO6: deal with `delete_()` and properly `delete` `Builder`s in [`constructBT()`](/bt.hpp#L275)\
-TODO7: [improve the randomisation](https://cplusplus.com/reference/random/mt19937_64/) to increase the range to be able to take [any length of fval](https://www.geeksforgeeks.org/binary-representation-of-a-given-number/) that you want\
-TODO8: Add a `re-expand()` function to expand tree into collapsed list and then back out into the original list (more efficient than using the exhaustive test)
-TODO9: improve outer interface and allow tree to be more searchable, perhaps reconstructing the original list or searching using gapped inputs?\
-TODO10: idk, any other [improvements](https://en.cppreference.com/w/cpp/utility/format/vformat) to the code\
+- TODO4: take a look at bottom of license and deal with that stuff :p
+- TODO5: rewrite confusing bt names and reorganise files and structure
+- TODO6: deal with `delete_()` and properly `delete` `Builder`s in [`constructBT()`](/bt.hpp#L275)
+- TODO7: [improve the randomisation](https://cplusplus.com/reference/random/mt19937_64/) to increase the range to be able to take [any length of fval](https://www.geeksforgeeks.org/binary-representation-of-a-given-number/) that you want
+- TODO8: Add a `re-expand()` function to expand tree into collapsed list and then back out into the original list (more efficient than using the exhaustive test)
+- TODO9: improve outer interface and allow tree to be more searchable, perhaps reconstructing the original list or searching using gapped inputs?\
+- TODO10: idk, any other [improvements](https://en.cppreference.com/w/cpp/utility/format/vformat) to the code\
