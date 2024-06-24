@@ -3,7 +3,7 @@ Binary String Storage Tree Compressor: Reduces and re-arranges data as it builds
 
 ## What and why is this?
 This project was born of frustration (storytime):\
-in my first year at uni, our 2nd piece of coursework was to write a program that generated a Perfect Binary Tree that would store a list of binary strings (all the same length). The 3rd piece of coursework then asked us to improve on that and to try to make the final tree take up as little space as possible. The easy answer was to just construct the necessary branches and then do a bit of pruning, however, that rarely produces an optimal structure that takes up the minimum amount of space, so I scribbled some ideas down and with inspiration from a friend was able to come up with an algorithmic solution that would first simplify the incoming values, then keep them arranged optimally while building the tree.
+in my first year at uni, our 2nd piece of coursework was to write a program that generated a [Perfect Binary Tree](https://www.geeksforgeeks.org/perfect-binary-tree/) that would store a list of binary strings (all the same length). The 3rd piece of coursework then asked us to improve on that and to try to make the final tree take up as little space as possible. The easy answer was to just construct the necessary branches and then do a bit of pruning; however, that rarely produces an optimal structure that takes up the minimum amount of space, so I scribbled some ideas down and with inspiration from a friend was able to come up with an algorithmic solution that would first reduce the incoming values, then keep them arranged optimally while building the tree.
 
 As a note, this is more a display of something that I've done, than a genuine solution that I expect to see people flocking to use :p
 
@@ -54,7 +54,7 @@ Once re-ordered, the Central `Builder`, `Cob` (i.e. the parent), splits these `b
 At this point, if a new `fval` is evaluated it would return '1' if it is in the tree and hit a `nullptr` otherwise, but there's one more [`add_0s()`](/bt.hpp#L378) function that converts all `nullptr`s to 0-leaves, to fit the coursework specifications, so that it will return 0 if an `fval` is not in the tree. Once that's done, a pointer to the root of the tree is returned and we're done :)
 
 ### `CoCo`s
-Correlation Coefficients: an artifact from my initial attempts at devising an algorithm. I was initially thinking of counting the number of '0's and '1's in each column (not each string) and using the computed values from that (basically entropy) to re-order the columns, but that didn't properly yield results and also lacked a logical thread of reasoning. 
+Correlation Coefficients: an artefact from my initial attempts at devising an algorithm. I was initially thinking of counting the number of '0's and '1's in each column (not each string) and using the computed values from that (basically entropy) to re-order the columns, but that didn't properly yield results and also lacked a logical thread of reasoning. 
 
 Despite moving on from that method, the concept, of calculating a coefficient for each column and re-ordering based on that, was here to stay. Now, it is a measure of how many don't cares, 'X's, there are in each column, and if there aren't any, it represents whether the values in a column are homogeneous or not. The reason behind the first point, is that by pushing the column with the most 'X's to the very end, we are minimising the amount of re-ordering we'll have to do in future passes and maximising the chance that we'll have a chain of 'X's at the end of more branches to come.\
 The truth is, that actually, it doesn't matter what order the columns are in, as long as:
@@ -115,8 +115,9 @@ And if there's anything you feel to be missing or if there's a very similar solu
 
 ## TODOs
 - TODO4: take a look at bottom of license and deal with that stuff :p
-- TODO5: rewrite confusing bt names and reorganise files and structure
+- TODO5: rewrite confusing bt names, reorganise files and structure, and add public API, since it's all a bit mystical right now...
 - TODO6: deal with `delete_()` and properly `delete` `Builder`s in [`constructBT()`](/bt.hpp#L275)
+- TODO𝜏: rewrite README a bit, to reflect the usage, since this doesn't make sense, without knowing how the tree is traversed
 - TODO7: [improve the randomisation](https://cplusplus.com/reference/random/mt19937_64/) to increase the range to be able to take [any length of fval](https://www.geeksforgeeks.org/binary-representation-of-a-given-number/) that you want
 - TODO8: Add a `re-expand()` function to expand tree into collapsed list and then back out into the original list (more efficient than using the exhaustive test)
 - TODO9: improve outer interface and allow tree to be more searchable, perhaps reconstructing the original list or searching using gapped inputs?\
