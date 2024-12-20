@@ -1,13 +1,16 @@
-#include <vector>
-#include <string>
+#ifndef BUILDER_H
+#define BUILDER_H
+
 #include <cmath>
+#include <string>
+#include <vector>
 #include <numeric>
-#include <unordered_set>
 #include <stdexcept>
+#include <unordered_set>
 
-//Restriction: can use any and only headers from the C++ standard library, except the algorithm library
+// Restriction: can only use C++ standard libraries, except <algorithm>
 
-//#pragma region Provided code
+#pragma region Provided code
 struct BNode{
   std::string val;  // "xn" (e.g. x3 or x1 etc) in non-leaf nodes
   // "0" or "1" in leaf nodes
@@ -56,7 +59,7 @@ std::string eval_bt(BNode* bt, const std::string& input){
     }
   }
 }
-//#pragma endregion Provided code
+#pragma endregion
 
 void deal_bt(BNode* &bt_root){
   if (bt_root->left != nullptr) {
@@ -466,3 +469,5 @@ public:
 private:
   BNode* t;
 };
+
+#endif
