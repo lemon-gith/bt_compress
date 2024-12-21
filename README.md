@@ -1,4 +1,5 @@
 # bt_compress
+
 Binary String Storage Tree Compressor: Reduces and re-arranges data as it builds the tree, removing as much redundancy as it can, resulting in many fewer nodes than a (Full) Perfect Binary Tree. The general idea is to take a vector of input data (binary strings) and construct a tree that allows one to later check whether a (later) given binary string was or wasn't in the original list, used to construct the tree.
 
 ## What and why is this?
@@ -7,7 +8,57 @@ in my first year at uni, our 2nd piece of coursework was to write a program that
 
 As a note, this is more a display of something that I've done, than a genuine solution that I expect to see people flocking to use :p
 
+## How do I use it?
+
+Nonetheless, should you wish to use it, I still have some usability modifications to make, but for now:
+
+There's a `Makefile`, which performs all the necessary compilation.\
+The only requirement is that you have a version `gcc` of installed
+that can compile `c++23`.
+
+### main program
+
+1. Run `make btc` (or `make bt_compress`)
+   - compile the relevant files to run the main program on your own input
+2. Run `./bt_compress [options]`
+   - `-h` bring up the help page for the binary
+   - `-f <filename>` compress a file containing nicely formatted values
+   - `<input>` pass input directly to the binary as a series of binary strings
+   - `-p` print out the produced binary tree
+   - `-b` run an exhaustive binary test to verify the tree
+
+### test program
+
+1. Run `make test` (or `make test_main`)
+   - compile the relevant files to run the main program on your own input
+2. Run `./test_main [options]`
+   - `-h` bring up the help page for the binary
+   - `-l <length>` sets the length of the generated fvals
+   - `-n <number>` sets the total number of generated fvals
+   - `-p` print out the produced binary tree
+   - `-b` run an exhaustive binary test to verify the tree
+
+If you want to use your own `*.cpp`, be my guest, just remember to [`#include "src/builder.h"`](src/builder.h).\
+This is the API for the Binary Tree:
+
+```c++
+class BoolTree{
+  // The class from which binary string storage trees can be instantiated and constructed using provided fvals
+  explicit BoolTree(const std::vector<std::string>& fvalues){...}
+
+  // a function that can be called to evaluate whether or not a given string is in the tree or not
+  std::string eval(const std::string& s){...}
+
+  // a function that returns the total number of nodes in the tree (including leaves)
+  int n_nodes(){...}
+};
+```
+
+Since this was initially designed as a coursework problem, the interface is pretty limited and minimal, but with time, I may come back to this project and add more things to make it a bit easier to use.\
+This origin story is also the reason that there's a [provided code](/bt.hpp#L11,60) section at the top.
+
 ## How does it work?
+
 The three key concepts:
 1. the collapsing of `fvals` (the vector of binary strings) where they overlap
 2. the re-ordering of `bvals` columns to optimise the column on which trees are split
@@ -34,16 +85,23 @@ The three key concepts:
 | `svals` | simplified values | `fvals`, but with similar values collapsed using don't cares ('X') |
 | `bvals` | build values | essentially `svals`, but with reordered columns: used for construction |
 
-| fvals | rvals | svals | bvals (L) | bvals (R) |
+| fvals | rvals (5) | svals | bvals (L) | bvals (R) |
 | :---: | :---: | :---: | :---: | :---: |
 | 0100101<br>1001001<br>1001011<br>0101001<br>0100001 | 01001-1<br>10010-1<br>10010-1<br>01010-1<br>01000-1 | 10010X1<br>0101001<br>0100X01 | 101001<br>100X01 | 0010X1 |
 
 ### Walkthrough
-Pre-SETUP, some input sanitisation is done (not necessary for the coursework, but why not future-proof it :p). This is important because the following simplification depends on each layer having already eliminated all duplicates and each value being the same length.
+
+#### Pre-SETUP
+
+Some input sanitisation is done (not necessary for the coursework, but why not future-proof it :p). This is important because the following simplification depends on each layer having already eliminated all duplicates and each value being the same length.
+
+#### SETUP
 
 `fvals` are then simplified into `svals` using a series of `rvals`: this iteration is only performed once, since, once collapsed, `svals` don't usually re-expand, meaning that they don't need to be re-collapsed. To demystify:\
 My friend came up with the first key idea that, by removing a column and checking for subsequent duplicates, you can see which strings only differ by only one value (have a hamming distance of 1), and in tree terms, this means that these strings can be collapsed into one string with a don't care ('X') in place of that omitted value: it doesn't matter whether the later query asks if the value at that position was a '0' or a '1', since both of those were in the original list.\
 The way this is done, is by iteratively removing each column, one-by-one (producing a corresponding `rvals` vector), keeping track of matching columns, then collapsing them in the `svals`, before continuing the iteration.
+
+#### BUILD
 
 Once those simplifications are performed, the `svals` are fed into a `Builder`: it is the Builder's job to construct a specific sub-tree and then return the root of that sub-tree. Of course, the Base Builder, `Bob`, gets the recursive tree construction started, then later returns its root, which is the root of the whole tree. 
 
@@ -54,6 +112,7 @@ Once re-ordered, the Central `Builder`, `Cob` (i.e. the parent), splits these `b
 At this point, if a new `fval` is evaluated it would return '1' if it is in the tree and hit a `nullptr` otherwise, but there's one more [`add_0s()`](/bt.hpp#L378) function that converts all `nullptr`s to 0-leaves, to fit the coursework specifications, so that it will return 0 if an `fval` is not in the tree. Once that's done, a pointer to the root of the tree is returned and we're done :)
 
 ### `CoCo`s
+
 Correlation Coefficients: an artefact from my initial attempts at devising an algorithm. I was initially thinking of counting the number of '0's and '1's in each column (not each string) and using the computed values from that (basically entropy) to re-order the columns, but that didn't properly yield results and also lacked a logical thread of reasoning. 
 
 Despite moving on from that method, the concept, of calculating a coefficient for each column and re-ordering based on that, was here to stay. Now, it is a measure of how many don't cares, 'X's, there are in each column, and if there aren't any, it represents whether the values in a column are homogeneous or not. The reason behind the first point, is that by pushing the column with the most 'X's to the very end, we are minimising the amount of re-ordering we'll have to do in future passes and maximising the chance that we'll have a chain of 'X's at the end of more branches to come.\
@@ -61,47 +120,11 @@ The truth is, that actually, it doesn't matter what order the columns are in, as
 
 > If a homogenous column exists, it should _always_ be split on.
 
-A homogenous column being a column that contains only '0's or only '1's, since this reduces the complexity of the tree (an unnecessary sub-tree doesn't need to be created).
+A homogenous column being a column that contains only '0's or only '1's, since this reduces the complexity of the tree (eliminates one out of the 2 sub-trees that would've been created).
 
 #### Sidenote
-Having an 'X' as the first character in a re-ordered `bval` is something I hadn't anticipated when first writing this, it required me to implement a fix just before uploading this project to GitHub (it's now been 2 years since I wrote the original code). It's something that's only possible when _every_ column has at least one don't care ('X') in it. It's an undesirable but unavoidable consequence of being able to collapse too many `fvals` (another reason to re-order the columns): it is the one exception to the permanence of the collapsing done by `simplifyFvals()`, since it represents a string that holds redundancy, but must now be re-expanded to be sent down to the correct sub-trees. Fortunately, this doesn't ruin the optimality of the algorithm, since the only reason a string would be re-expanded is if that column absolutely _had_ to be at the front, i.e. if we were to split on a different column we would have to re-expand a greater than or equal number of strings.
 
-## How do I use it?
-You can expect usability edits in the future when I gain more experience writing code for something other than personal projects, but for now:
-
-If you want to use my `main.cpp` file for testing and seeing just what levels of shenaniganry my solution can cope with, then feel free to  compile that file (`bt.hpp` is `included`) and modify the [user-defined values](./main.cpp#L80).
-
-```c++
-// if read_from_text is false, the program generates a randomised list of fvals 
-bool read_from_txt = false;
-// ?
-int length = 15;  // how long is each individual fval
-int no_of_fvals = 1000;  // how many fvals
-// :
-std::string txt_location = "values.txt";  // where should the program read fvals from?
-// ;
-bool print_tree = false;  // should the tree be printed in the terminal?
-bool run_bin_test = false;  // should the program run a full test of all binary values of length `length`, to check the tree?
-```
-
-If you want to use your own `main.cpp`, be my guest, just remember to `#include "bt.hpp"`. \
-This is the defined interface:
-
-```c++
-class BoolTree{
-  // The class from which binary string storage trees can be instantiated and constructed using provided fvals
-  explicit BoolTree(const std::vector<std::string>& fvalues){...}
-
-  // a function that can be called to evaluate whether or not a given string is in the tree or not
-  std::string eval(const std::string& s){...}
-
-  // a function that returns the total number of nodes in the tree (including leaves)
-  int n_nodes(){...}
-};
-```
-
-Since this was initially designed as a coursework problem, the interface is pretty limited and minimal, but with time, I may come back to this project and add more things to make it a bit easier to use.\
-The origin story is also the reason that there's a [provided code](/bt.hpp#L11,60) section at the top.
+Having an 'X' as the first character in a re-ordered `bval` is something I hadn't anticipated when first writing this, it required me to implement a fix just before uploading this project to GitHub (it had been 2 years since I wrote the original code). It's something that's only possible when _every_ column has at least one don't care (`X`) in it. It's an undesirable but unavoidable consequence of being able to collapse too many `fvals` (another reason to re-order the columns): it is the one exception to the permanence of the collapsing done by `simplifyFvals()`, since it represents a string that holds redundancy, but must now be re-expanded to be sent down to the correct sub-trees. Fortunately, this doesn't ruin the optimality of the algorithm, since the only reason a string would be re-expanded is if that column absolutely _had_ to be at the front, i.e. if we were to split on a different column we would have to re-expand a greater than or equal number of strings.
 
 ## Notes
 
@@ -114,8 +137,8 @@ And if there's anything you feel to be missing or if there's a very similar solu
 ---
 
 ## TODOs
-- TODO4: take a look at bottom of license and deal with that stuff :p
-- TODO5: rewrite confusing bt names, reorganise files and structure, and add public API, since it's all a bit mystical right now...
+
+- TODO5: rewrite confusing bt names, reorganise files, and add public API, since it's all a bit mystical right now...
 - TODO6: deal with `delete_()` and properly `delete` `Builder`s in [`constructBT()`](/bt.hpp#L275)
 - TODO𝜏: rewrite README a bit, to reflect the usage, since this doesn't make sense, without knowing how the tree is traversed
 - TODO6.5: Prove optimality of algorithm (if sub-optimal, fix that)
