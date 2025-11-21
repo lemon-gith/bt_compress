@@ -1,5 +1,5 @@
-#ifndef BUILDER_H
-#define BUILDER_H
+#ifndef BUILDER_HPP
+#define BUILDER_HPP
 
 // needed in some struct definitions
 #include <vector>

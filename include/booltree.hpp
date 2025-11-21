@@ -1,9 +1,9 @@
-#ifndef BOOLTREE_H
-#define BOOLTREE_H
+#ifndef BOOLTREE_HPP
+#define BOOLTREE_HPP
 
 #include <string>
 #include <vector>
-#include "builder.h"
+#include "builder.hpp"
 
 
 class BoolTree {

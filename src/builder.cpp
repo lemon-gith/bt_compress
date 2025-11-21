@@ -4,7 +4,7 @@
 #include <numeric>
 #include <stdexcept>
 #include <unordered_set>
-#include "builder.h"
+#include "builder.hpp"
 
 // Restriction: can use C++ standard libraries, but not <algorithm>
 

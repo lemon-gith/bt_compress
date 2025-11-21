@@ -2,7 +2,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <iostream>
-#include "builder.h"
+#include "builder.hpp"
 
 
 void rec_print_bt(BNode* root, int layer = 0) {
