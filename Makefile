@@ -1,24 +1,45 @@
-.PHONY: clean
+IDIR = include
+SDIR = src
+ODIR = obj
+TDIR = test
+
+# Source files in src/
+SRCS = $(wildcard $(SDIR)/*.cpp)
+OBJS = $(patsubst $(SDIR)/%.cpp,$(ODIR)/%.o,$(SRCS))
+TESTS = $(wildcard $(TDIR)/*.cpp)
+TOBJS = $(patsubst $(TDIR)/%.cpp,$(ODIR)/%.o,$(TESTS))
+
+CC = g++
+FLAGS=-I$(IDIR) -std=c++23 -Wall
+
 all: btc test
 
 btc: bt_compress
 
 test: test_main
 
-bt_compress: bt_compress.o builder.o
-	g++ -std=c++23 bt_compress.o builder.o -o bt_compress
 
-bt_compress.o: src/bt_compress.cpp
-	g++ -std=c++23 -c src/bt_compress.cpp
+# template rules to handle obj/ and obj compilation
+$(ODIR):
+	mkdir -p $(ODIR)
 
-builder.o: src/builder.cpp
-	g++ -std=c++23 -c src/builder.cpp
+$(ODIR)/%.o: $(SDIR)/%.cpp | $(ODIR)
+	$(CC) -c -o $@ $< $(CFLAGS) $(LIBS)
 
-test_main: builder.o test_main.o
-	g++ -std=c++23 builder.o test_main.o -o test_main
+test_main.o: $(TDIR)/main.cpp | $(ODIR)
+	$(CC) -c -o $@ $< $(CFLAGS)  $(LIBS)
 
-test_main.o: test/main.cpp
-	g++ -std=c++23 -c test/main.cpp -o test_main.o
+# rules for compiling final obj and exe's
+bt_compress: $(ODIR)/$@.o $(OBJS)
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
+
+# TODO: not quite sure how to handle compilation of test file,
+# since it's kind of a competing main from the btc main
+test_main: $(ODIR)/test_main.o $(TOBJS)
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 
 clean:
-	rm *.o bt_compress test_main
+	rm -rf $(ODIR) bt_compress test_main *~ core $(IDIR)/*~
+
+
+.PHONY: all clean btc test
