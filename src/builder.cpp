@@ -5,60 +5,69 @@
 #include <stdexcept>
 #include <unordered_set>
 #include "builder.hpp"
+#include "utils.hpp"
+#include "simplification.hpp"
 
-// Restriction: can use C++ standard libraries, but not <algorithm>
 
-#pragma region Provided code
-int n_nodes_bt(BNode* t) {
-  if(t == nullptr) {
-    return 0;
+BNode* build_bt(const std::vector<std::string>& fvalues){
+  if (fvalues.empty()){
+    return nullptr;
+  }
+
+  std::vector<std::string> sanitised_fvals = border_control(fvalues);
+
+  Builder Bob(simplifyFvals(sanitised_fvals));
+
+  BNode* bt_root = constructBT(Bob);
+  add_0s(bt_root);
+
+  return bt_root;
+}
+
+BNode* constructBT(Builder &Cob) {
+  if (Cob.straightBuild()){
+    return Cob.branchCons();
+  }
+
+  SplitVals data = Cob.pathSplit();
+
+  Cob.delete_();
+
+  // TODO: Check if this 'malfunction' is now possible with path split allowing splitting on 'X'
+  if (data.l_vals.empty()){  // for both l_vals and r_vals, would take a simplifyFvals() malfunction
+    Builder Rob(data.seq_vals, data.r_vals);
+    return nodeCons(data.curr_node_val, nullptr, constructBT(Rob));
+  }
+  else if (data.r_vals.empty()){
+    Builder Lob(data.seq_vals, data.l_vals);
+    return nodeCons(data.curr_node_val, constructBT(Lob), nullptr);
   }
   else{
-    return 1 + n_nodes_bt(t->left) + n_nodes_bt(t->right);
+    Builder Lob(data.seq_vals, data.l_vals);
+    Builder Rob(data.seq_vals, data.r_vals);
+
+    return nodeCons(data.curr_node_val, constructBT(Lob), constructBT(Rob));
   }
 }
 
-int label_to_idx(const std::string& label) {
-
-  std::string out;
-
-  for(int i = 1; i < label.size(); i++) {
-    out.push_back(label[i]);
+void add_0s (BNode* curr_root) {
+  if (curr_root->val == "1"){
+    return;
   }
 
-  return std::stoi(out) - 1;
-}
-
-std::string eval_bt(BNode* bt, const std::string& input) {
-
-  if( (bt->left == nullptr) && (bt->right == nullptr) ) {
-    return bt->val;
+  if (curr_root->left == nullptr){
+    curr_root->left = nodeCons("0");
   }
   else{
-    int idx = label_to_idx(bt->val);
-    std::string input_idx;
-    input_idx.push_back(input[idx]);
-
-    if(input_idx == "0") {
-      return eval_bt(bt->left, input);
-    }
-    else{
-      return eval_bt(bt->right, input);
-    }
+    add_0s(curr_root->left);
   }
-}
-#pragma endregion
 
-BNode* nodeCons(
-  const std::string& data,
-  BNode* l_ptr = nullptr, BNode* r_ptr = nullptr
-) {
-  BNode* new_root;
-  new_root = new BNode;
-  new_root->left = l_ptr;
-  new_root->val = data;
-  new_root->right = r_ptr;
-  return new_root;
+  if (curr_root->right == nullptr){
+    curr_root->right = nodeCons("0");
+  }
+  else{
+    add_0s(curr_root->right);
+  }
 }
 
 void deallocate_bt(BNode* &bt_root) {
@@ -71,13 +80,9 @@ void deallocate_bt(BNode* &bt_root) {
   delete bt_root;
 }
 
-void empty_fill(std::vector<std::string> &vec, int count) {
-  for (int i = 0; i < count; i++) {
-    vec.push_back("");
-  }
-}
+// ------------------- Builder class definitions -------------------
 
-struct SplitVals{
+struct SplitVals {
   std::string curr_node_val{};
 
   std::vector<int> seq_vals{};
@@ -256,177 +261,4 @@ void Builder::delete_() {
   mBvals.clear();
   mBvals.shrink_to_fit();
   mLength = 0;
-}
-
-
-BNode* constructBT(Builder &Cob) {
-  if (Cob.straightBuild()){
-    return Cob.branchCons();
-  }
-
-  SplitVals data = Cob.pathSplit();
-
-  Cob.delete_();
-
-  // TODO: Check if this 'malfunction' is now possible with path split allowing splitting on 'X'
-  if (data.l_vals.empty()){  // for both l_vals and r_vals, would take a simplifyFvals() malfunction
-    Builder Rob(data.seq_vals, data.r_vals);
-    return nodeCons(data.curr_node_val, nullptr, constructBT(Rob));
-  }
-  else if (data.r_vals.empty()){
-    Builder Lob(data.seq_vals, data.l_vals);
-    return nodeCons(data.curr_node_val, constructBT(Lob), nullptr);
-  }
-  else{
-    Builder Lob(data.seq_vals, data.l_vals);
-    Builder Rob(data.seq_vals, data.r_vals);
-
-    return nodeCons(data.curr_node_val, constructBT(Lob), constructBT(Rob));
-  }
-}
-
-std::vector<std::pair<int, int>> findDuplicates(
-  const std::vector<std::string> &rvals
-) {
-  std::vector<std::pair<int, int>> duplicates{};
-
-  for (int comparator = 0; comparator < rvals.size(); comparator++){
-    for (int comparand = comparator + 1; comparand < rvals.size(); comparand++){
-      if (rvals[comparator] == rvals[comparand]){
-        duplicates.push_back(std::pair<int, int>(comparator, comparand)); // in ascending order
-      }
-    }
-  }
-  return duplicates;
-}
-
-int maxSecond(const std::vector<std::pair<int, int>> &dups) {
-  if (dups.empty()){
-    return -1;
-  }
-  else if (dups.size() == 1){
-    return 0;
-  }
-  else if (dups.size() == 2){
-    return dups[0].second > dups[1].second ? 0 : 1;
-  }
-  else{
-    int max_val = dups[0].second;
-    int max_idx = 0;
-
-    for (int i = 1; i < dups.size(); i++){
-      if (dups[i].second > max_val){
-        max_val = dups[i].second;
-        max_idx = i;
-      }
-    }
-    return max_idx;
-  }
-}
-
-void collapseSimilar(
-  std::vector<std::string> &rvals, std::vector<char> &omitted_col,
-  std::vector<std::pair<int, int>> &duplicates
-) {
-  int dup1, dup2;
-
-  for (int i = maxSecond(duplicates); i >= 0; i = maxSecond(duplicates)){
-    dup1 = duplicates[i].first;
-    dup2 = duplicates[i].second;
-
-    omitted_col[dup1] = 'X';
-    omitted_col.erase(omitted_col.begin() + dup2);
-    rvals.erase(rvals.begin() + dup2);
-
-    duplicates.erase(duplicates.begin() + i);
-  }
-}
-
-std::vector<std::string> simplifyFvals(std::vector<std::string> fvals) {
-  // not removing duplicates, as shouldn't theoretically happen here
-  std::vector<char> omitted_col{};
-  omitted_col.reserve(fvals.size());
-  std::vector<std::string> rvals{};
-  rvals.reserve(fvals.size());
-  std::vector<std::pair<int, int>> duplicates{};
-
-  for (int i = 0; i < fvals[0].size(); i++){
-    omitted_col.clear();
-
-    for (std::string &fval : fvals){
-      omitted_col.push_back(fval[i]);
-      fval.erase(fval.begin() + i);
-    }
-
-    duplicates = findDuplicates(fvals);
-    collapseSimilar(fvals, omitted_col, duplicates);
-
-    for (int rep_idx = 0; rep_idx < omitted_col.size(); rep_idx++){
-      fvals[rep_idx].insert(fvals[rep_idx].begin() + i, omitted_col[rep_idx]);
-    }
-  }
-  return fvals;
-}
-
-void add_0s (BNode* curr_root) {
-  if (curr_root->val == "1"){
-    return;
-  }
-
-  if (curr_root->left == nullptr){
-    curr_root->left = nodeCons("0");
-  }
-  else{
-    add_0s(curr_root->left);
-  }
-
-  if (curr_root->right == nullptr){
-    curr_root->right = nodeCons("0");
-  }
-  else{
-    add_0s(curr_root->right);
-  }
-}
-
-void removeDuplicates(std::vector<std::string> &vec) {
-  std::unordered_set<std::string> unique_fvals(vec.begin(), vec.end());
-  vec.clear();
-  vec.reserve(unique_fvals.size());
-  for (const std::string fval : unique_fvals){
-    vec.push_back(fval);
-  }
-}
-
-std::vector<std::string> border_control(std::vector<std::string> fvals) {
-  int length = int(fvals[0].size());
-
-  for (const std::string &fval : fvals){
-    if (fval.size() != length){
-      // TODO: track max-length and zero-pad to longest, also give error output
-      throw std::length_error("not all fvals are of the same length");
-    }
-    for (const char &val : fval){
-      if ((val != '0') && (val != '1')){
-        throw std::invalid_argument("input contains non-binary characters");
-      }
-    }
-  }
-  removeDuplicates(fvals);
-  return fvals;
-}
-
-BNode* build_bt(const std::vector<std::string>& fvalues){
-  if (fvalues.empty()){
-    return nullptr;
-  }
-
-  std::vector<std::string> sanitised_fvals = border_control(fvalues);
-
-  Builder Bob(simplifyFvals(fvalues));
-
-
-  BNode* bt_root = constructBT(Bob);
-  add_0s(bt_root);
-
-  return bt_root;
 }

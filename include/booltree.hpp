@@ -6,6 +6,8 @@
 #include "builder.hpp"
 
 
+// class defining the final Boolean Tree structure
+// this was provided to us as part of the project, not to be modified
 class BoolTree {
 private:
   BNode* t;

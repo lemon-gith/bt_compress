@@ -1,5 +1,9 @@
 #include "booltree.hpp"
+#include "bnode.hpp"
 
+
+// these definitions were all provided to us as part of the project
+// not to be modified in any way
 
 explicit BoolTree::BoolTree(const std::vector<std::string>& fvalues) {
   t = build_bt(fvalues);
