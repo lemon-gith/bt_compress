@@ -9,79 +9,6 @@
 #include "simplification.hpp"
 
 
-BNode* build_bt(const std::vector<std::string>& fvalues){
-  if (fvalues.empty()){
-    return nullptr;
-  }
-
-  std::vector<std::string> sanitised_fvals = border_control(fvalues);
-
-  Builder Bob(simplifyFvals(sanitised_fvals));
-
-  BNode* bt_root = constructBT(Bob);
-  add_0s(bt_root);
-
-  return bt_root;
-}
-
-BNode* constructBT(Builder &Cob) {
-  if (Cob.straightBuild()){
-    return Cob.branchCons();
-  }
-
-  SplitVals data = Cob.pathSplit();
-
-  Cob.delete_();
-
-  // TODO: Check if this 'malfunction' is now possible with path split allowing splitting on 'X'
-  if (data.l_vals.empty()){  // for both l_vals and r_vals, would take a simplifyFvals() malfunction
-    Builder Rob(data.seq_vals, data.r_vals);
-    return nodeCons(data.curr_node_val, nullptr, constructBT(Rob));
-  }
-  else if (data.r_vals.empty()){
-    Builder Lob(data.seq_vals, data.l_vals);
-    return nodeCons(data.curr_node_val, constructBT(Lob), nullptr);
-  }
-  else{
-    Builder Lob(data.seq_vals, data.l_vals);
-    Builder Rob(data.seq_vals, data.r_vals);
-
-    return nodeCons(data.curr_node_val, constructBT(Lob), constructBT(Rob));
-  }
-}
-
-void add_0s (BNode* curr_root) {
-  if (curr_root->val == "1"){
-    return;
-  }
-
-  if (curr_root->left == nullptr){
-    curr_root->left = nodeCons("0");
-  }
-  else{
-    add_0s(curr_root->left);
-  }
-
-  if (curr_root->right == nullptr){
-    curr_root->right = nodeCons("0");
-  }
-  else{
-    add_0s(curr_root->right);
-  }
-}
-
-void deallocate_bt(BNode* &bt_root) {
-  if (bt_root->left != nullptr) {
-    deallocate_bt(bt_root->left);
-  }
-  if (bt_root->right != nullptr) {
-    deallocate_bt(bt_root->right);
-  }
-  delete bt_root;
-}
-
-// ------------------- Builder class definitions -------------------
-
 struct SplitVals {
   std::string curr_node_val{};
 
@@ -174,7 +101,7 @@ void Builder::orderCol(std::vector<int> &seq, std::vector<std::string> &vals) {
   }
 }
 
-explicit Builder::Builder(std::vector<std::string> svals) {
+Builder::Builder(std::vector<std::string> svals) {
   mLength = int(svals[0].size());
 
   std::vector<int> sequence(mLength);
@@ -261,4 +188,77 @@ void Builder::delete_() {
   mBvals.clear();
   mBvals.shrink_to_fit();
   mLength = 0;
+}
+
+// ------------------- Builder class definitions -------------------
+
+BNode* build_bt(const std::vector<std::string>& fvalues){
+  if (fvalues.empty()){
+    return nullptr;
+  }
+
+  std::vector<std::string> sanitised_fvals = border_control(fvalues);
+
+  Builder Bob(simplifyFvals(sanitised_fvals));
+
+  BNode* bt_root = constructBT(Bob);
+  add_0s(bt_root);
+
+  return bt_root;
+}
+
+BNode* constructBT(Builder &Cob) {
+  if (Cob.straightBuild()){
+    return Cob.branchCons();
+  }
+
+  SplitVals data = Cob.pathSplit();
+
+  Cob.delete_();
+
+  // TODO: Check if this 'malfunction' is now possible with path split allowing splitting on 'X'
+  if (data.l_vals.empty()){  // for both l_vals and r_vals, would take a simplifyFvals() malfunction
+    Builder Rob(data.seq_vals, data.r_vals);
+    return nodeCons(data.curr_node_val, nullptr, constructBT(Rob));
+  }
+  else if (data.r_vals.empty()){
+    Builder Lob(data.seq_vals, data.l_vals);
+    return nodeCons(data.curr_node_val, constructBT(Lob), nullptr);
+  }
+  else{
+    Builder Lob(data.seq_vals, data.l_vals);
+    Builder Rob(data.seq_vals, data.r_vals);
+
+    return nodeCons(data.curr_node_val, constructBT(Lob), constructBT(Rob));
+  }
+}
+
+void add_0s (BNode* curr_root) {
+  if (curr_root->val == "1"){
+    return;
+  }
+
+  if (curr_root->left == nullptr){
+    curr_root->left = nodeCons("0");
+  }
+  else{
+    add_0s(curr_root->left);
+  }
+
+  if (curr_root->right == nullptr){
+    curr_root->right = nodeCons("0");
+  }
+  else{
+    add_0s(curr_root->right);
+  }
+}
+
+void deallocate_bt(BNode* &bt_root) {
+  if (bt_root->left != nullptr) {
+    deallocate_bt(bt_root->left);
+  }
+  if (bt_root->right != nullptr) {
+    deallocate_bt(bt_root->right);
+  }
+  delete bt_root;
 }

@@ -15,7 +15,8 @@ int label_to_idx(const std::string& label) {
 
   std::string out;
 
-  for(int i = 1; i < label.size(); i++) {
+  // ensure label.size() < INT_MAX in simplification::border_control
+  for(int i = 1; i < (int)label.size(); i++) {
     out.push_back(label[i]);
   }
 
@@ -43,10 +44,7 @@ std::string eval_bt(BNode* bt, const std::string& input) {
 #pragma endregion
 
 
-BNode* nodeCons(
-  const std::string& data,
-  BNode* l_ptr = nullptr, BNode* r_ptr = nullptr
-) {
+BNode* nodeCons(const std::string& data, BNode* l_ptr, BNode* r_ptr ) {
   BNode* new_root;
   new_root = new BNode;
   new_root->left = l_ptr;

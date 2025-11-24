@@ -74,6 +74,16 @@ std::vector<std::string> simplifyFvals(std::vector<std::string> fvals) {
 std::vector<std::string> border_control(std::vector<std::string> fvals) {
   int length = int(fvals[0].size());
 
+  // TODO: what???
+  // perform a checked type conversion
+  unsigned long label_len_ul = fvals[0].size();
+  if (label_len_ul > (__INT32_MAX__ - 1)) {
+    // `-1` as label can be up to (fval length + 1)
+    throw ;
+  }
+  int label_len = (int)label_len_ul;
+
+
   for (const std::string &fval : fvals){
     if (fval.size() != length){
       // TODO: track max-length and zero-pad to longest, also give error output

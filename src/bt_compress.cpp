@@ -2,7 +2,10 @@
 #include <fstream>
 #include <cstdlib>
 #include <iostream>
+#include <cmath>
+#include "booltree.hpp"
 #include "builder.hpp"
+
 
 
 void rec_print_bt(BNode* root, int layer = 0) {
@@ -141,7 +144,7 @@ int main(int argc, char* argv[]) {
     std::cout << std::endl;
     std::cout << "now running a full check of which fvals are represented by the tree:\n" << std::endl;
 
-    BNode* beetroot = ft2.showRoot();
+    // BNode* beetroot = ft2.showRoot();
 
     // TODO: make this take in object pointer and call eval method
     // full_bin_test(beetroot, length);

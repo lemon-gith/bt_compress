@@ -141,6 +141,7 @@ And if there's anything you feel to be missing or if there's a very similar solu
 - TODO5: rewrite confusing bt names, reorganise files, and add public API, since it's all a bit mystical right now...
 - TODO6: deal with `delete_()` and properly `delete` `Builder`s in [`constructBT()`](/bt.hpp#L275)
 - TODO𝜏: rewrite README a bit, to reflect the usage, since this doesn't make sense, without knowing how the tree is traversed
+  - "Restriction: can use C++ standard libraries, but not <algorithm>"
 - TODO6.5: Prove optimality of algorithm (if sub-optimal, fix that)
 - TODO7: [improve the randomisation](https://cplusplus.com/reference/random/mt19937_64/) to increase the range to be able to take [any length of fval](https://www.geeksforgeeks.org/binary-representation-of-a-given-number/) that you want (add padding to accommodate different length-ed fvals, too)
 - TODO8: Add a `re-expand()` function to expand tree into collapsed list and then back out into the original list (more efficient than using the exhaustive test)
