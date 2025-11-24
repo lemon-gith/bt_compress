@@ -2,7 +2,9 @@
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
-#include "../src/builder.h"
+#include <cmath>
+#include "builder.hpp"
+#include "booltree.hpp"
 
 
 void rec_print_bt(BNode* root, int layer = 0){
@@ -75,9 +77,6 @@ std::string ranNonFval(const int &length, std::vector<std::string> &fvals){
   return test_str;
 }
 //endregion
-
-
-
 
 
 // TODO: refactor and remove testing-related elements
