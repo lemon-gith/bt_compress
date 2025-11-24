@@ -24,19 +24,19 @@ $(ODIR):
 	mkdir -p $(ODIR)
 
 $(ODIR)/%.o: $(SDIR)/%.cpp | $(ODIR)
-	$(CC) -c -o $@ $< $(CFLAGS) $(LIBS)
+	$(CC) -c -o $@ $< $(FLAGS) $(LIBS)
 
 test_main.o: $(TDIR)/main.cpp | $(ODIR)
-	$(CC) -c -o $@ $< $(CFLAGS)  $(LIBS)
+	$(CC) -c -o $@ $< $(FLAGS)  $(LIBS)
 
 # rules for compiling final obj and exe's
-bt_compress: $(ODIR)/$@.o $(OBJS)
-	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
+btc: $(ODIR)/bt_compress.o $(OBJS) | $(ODIR)
+	$(CC) -o $@ $^ $(FLAGS) $(LIBS)
 
 # TODO: not quite sure how to handle compilation of test file,
 # since it's kind of a competing main from the btc main
-test_main: $(ODIR)/test_main.o $(TOBJS)
-	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
+main: $(ODIR)/test_main.o $(TOBJS) | $(ODIR)
+	$(CC) -o $@ $^ $(FLAGS) $(LIBS)
 
 clean:
 	rm -rf $(ODIR) bt_compress test_main *~ core $(IDIR)/*~
