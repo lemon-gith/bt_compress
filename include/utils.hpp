@@ -19,7 +19,7 @@ std::vector<std::pair<int, int>> findDuplicates(
   const std::vector<std::string> &rvals
 );
 
-// in-place removal of duplicate strings from a given vector
-void removeDuplicates(std::vector<std::string> &vec);
+// produces a copy of the input vector with duplicates removed
+std::vector<std::string> removeDuplicates(std::vector<std::string> &vec);
 
 #endif

@@ -95,6 +95,6 @@ std::vector<std::string> border_control(std::vector<std::string> fvals) {
       }
     }
   }
-  removeDuplicates(fvals);
-  return fvals;
+
+  return removeDuplicates(fvals);
 }

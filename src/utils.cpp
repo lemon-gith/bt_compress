@@ -23,11 +23,11 @@ std::vector<std::pair<int, int>> findDuplicates(
   return duplicates;
 }
 
-void removeDuplicates(std::vector<std::string> &vec) {
+std::vector<std::string> removeDuplicates(std::vector<std::string> &vec) {
   std::unordered_set<std::string> unique_fvals(vec.begin(), vec.end());
-  vec.clear();
-  vec.reserve(unique_fvals.size());
-  for (const std::string fval : unique_fvals){
-    vec.push_back(fval);
-  }
+  std::vector<std::string> unique_vec = std::vector<std::string>(
+    unique_fvals.begin(), unique_fvals.end()
+  );
+
+  return unique_vec;
 }
