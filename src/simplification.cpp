@@ -17,7 +17,7 @@ int maxSecond(const std::vector<std::pair<int, int>> &dups) {
     int max_val = dups[0].second;
     int max_idx = 0;
 
-    for (int i = 1; i < dups.size(); i++){
+    for (int i = 1; i < (int)dups.size(); i++){
       if (dups[i].second > max_val){
         max_val = dups[i].second;
         max_idx = i;
@@ -53,7 +53,7 @@ std::vector<std::string> simplifyFvals(std::vector<std::string> fvals) {
   rvals.reserve(fvals.size());
   std::vector<std::pair<int, int>> duplicates{};
 
-  for (int i = 0; i < fvals[0].size(); i++){
+  for (int i = 0; i < (int)fvals[0].size(); i++){
     omitted_col.clear();
 
     for (std::string &fval : fvals){
@@ -64,7 +64,7 @@ std::vector<std::string> simplifyFvals(std::vector<std::string> fvals) {
     duplicates = findDuplicates(fvals);
     collapseSimilar(fvals, omitted_col, duplicates);
 
-    for (int rep_idx = 0; rep_idx < omitted_col.size(); rep_idx++){
+    for (int rep_idx = 0; rep_idx < (int)omitted_col.size(); rep_idx++) {
       fvals[rep_idx].insert(fvals[rep_idx].begin() + i, omitted_col[rep_idx]);
     }
   }
@@ -74,18 +74,15 @@ std::vector<std::string> simplifyFvals(std::vector<std::string> fvals) {
 std::vector<std::string> border_control(std::vector<std::string> fvals) {
   int length = int(fvals[0].size());
 
-  // TODO: what???
   // perform a checked type conversion
   unsigned long label_len_ul = fvals[0].size();
   if (label_len_ul > (__INT32_MAX__ - 1)) {
     // `-1` as label can be up to (fval length + 1)
-    throw ;
+    throw std::length_error("fvals are too long for int");;
   }
-  int label_len = (int)label_len_ul;
-
 
   for (const std::string &fval : fvals){
-    if (fval.size() != length){
+    if ((int)fval.size() != length){
       // TODO: track max-length and zero-pad to longest, also give error output
       throw std::length_error("not all fvals are of the same length");
     }

@@ -37,7 +37,11 @@ std::vector<int> Builder::createCocos(std::vector<std::string> &vals) const {
     else{
       bool diff = 0;
 
-      for (int branch = 1; (branch < vals.size()) && (!diff); branch++) {
+      for (
+        int branch = 1;
+        (branch < (int)vals.size()) && (!diff);
+        branch++
+      ) {
         if (vals[branch - 1][col] != vals[branch][col]) {
           diff = 1;
         }
@@ -59,7 +63,7 @@ void Builder::orderAttributes(
 
   for (const int &idx : order) {
     mSeq.push_back(seq[idx]);
-    for (int i = 0; i < vals.size(); i++) {
+    for (int i = 0; i < (int)vals.size(); i++) {
       mBvals[i].append(std::string(1, vals[i][idx]));
     }
   }
@@ -91,7 +95,7 @@ void Builder::orderCol(std::vector<int> &seq, std::vector<std::string> &vals) {
     new_order.reserve(cocos.size());
 
     for (int coco_val = 1; new_order.size() < cocos.size(); coco_val--) {
-      for (int i = 0; i < cocos.size(); i++) {
+      for (int i = 0; i < (int)cocos.size(); i++) {
         if (cocos[i] == coco_val) {
           new_order.push_back(i);
         }
@@ -116,14 +120,15 @@ Builder::Builder(std::vector<int> sequence, std::vector<std::string>& bvals) {
   orderCol(sequence, bvals);
 }
 
-// TODO: I feel like this should be renamed
-bool Builder::straightBuild() {
+bool Builder::onLastBranch() {
   return mBvals.size() == 1;
 }
 
 BNode* Builder::branchCons() {
   if (mBvals.size() != 1) {  // Just felt like throwing an error message here
-    throw std::length_error("branchCons() should only deal with one row mBvals");
+    throw std::length_error(
+      "branchCons() should only deal with one row mBvals"
+    );
   }
 
   std::string branch_vals = mBvals[0];
@@ -143,7 +148,9 @@ BNode* Builder::branchCons() {
       stored_ptr = nodeCons("x" + std::to_string(mSeq[i]),nullptr, stored_ptr);
     }
     else{
-      throw std::invalid_argument("Somehow, sth not '0' or '1' has made it into branchCons() main loop");
+      throw std::invalid_argument(
+        "Somehow, sth not '0' or '1' has made it into branchCons() main loop"
+      );
     }
   }
   this->delete_();
@@ -175,7 +182,9 @@ SplitVals Builder::pathSplit() {
     }
 
     if ((branch[0] != '0') && (branch[0] != '1') && (branch[0] != 'X')) {
-      throw std::logic_error("attempted to split: unexpected value at branch[0] for " + branch);
+      throw std::logic_error(
+        "attempted to split: unexpected value at branch[0] for " + branch
+      );
     }
   }
   return data;
@@ -208,7 +217,7 @@ BNode* build_bt(const std::vector<std::string>& fvalues){
 }
 
 BNode* constructBT(Builder &Cob) {
-  if (Cob.straightBuild()){
+  if (Cob.onLastBranch()){
     return Cob.branchCons();
   }
 

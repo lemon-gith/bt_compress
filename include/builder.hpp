@@ -31,8 +31,13 @@ public:
 
   Builder(std::vector<int> sequence, std::vector<std::string>& bvals);
 
-  bool straightBuild();
+  /// @brief checks if a straight build is possible from current Builder state
+  /// @return returns bool indicating whether a straight build is possible
+  bool onLastBranch();
 
+  /// @brief called when Builder's mBvals consists of only one bval,
+  ///        constructs a branch directly from that
+  /// @return pointer to root of constructed branch
   BNode* branchCons();
 
   SplitVals pathSplit();

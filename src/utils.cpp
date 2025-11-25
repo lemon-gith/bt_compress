@@ -13,10 +13,13 @@ std::vector<std::pair<int, int>> findDuplicates(
 ) {
   std::vector<std::pair<int, int>> duplicates{};
 
-  for (int comparator = 0; comparator < rvals.size(); comparator++){
-    for (int comparand = comparator + 1; comparand < rvals.size(); comparand++){
+  int rvals_size = int(rvals.size());
+
+  for (int comparator = 0; comparator < rvals_size; comparator++){
+    for (int comparand = comparator + 1; comparand < rvals_size; comparand++){
       if (rvals[comparator] == rvals[comparand]){
-        duplicates.push_back(std::pair<int, int>(comparator, comparand)); // in ascending order
+        // in ascending order
+        duplicates.push_back(std::pair<int, int>(comparator, comparand));
       }
     }
   }

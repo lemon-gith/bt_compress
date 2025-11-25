@@ -122,7 +122,7 @@ int main(int argc, char* argv[]) {
   std::cout << "constructed with " << ft2.n_nodes() << " nodes :)" << std::endl;
 
   // TODO: rewrite this to be a bit more useful
-  if ((args.read_from_txt) && (args.txt_location == "example.txt")) {
+  if ((args.read_from_txt) && (args.txt_location == "test/data/values.txt")) {
     std::cout << ft2.eval("0011001010") << std::endl;
     // this should print "0"
 
