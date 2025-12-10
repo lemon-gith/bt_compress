@@ -34,7 +34,7 @@ btc: $(ODIR)/bt_compress.o $(OBJS) | $(ODIR)
 
 # TODO: not quite sure how to handle compilation of test file,
 # since it's kind of a competing main from the btc main
-tmain: $(ODIR)/test_main.o $(TOBJS) | $(ODIR)
+tmain: $(ODIR)/test_main.o $(TOBJS) $(filter-out obj/bt_compress.o, $(OBJS)) | $(ODIR)
 	$(CC) -o $@ $^ $(FLAGS) $(LIBS)
 
 clean:

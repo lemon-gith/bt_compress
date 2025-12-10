@@ -15,8 +15,10 @@ void full_bin_test(BNode* root, const int &length){
   fmt.append(std::to_string(length));
   fmt.append("b}");
   for (int i = 0; i < pow(2, length); i++){
-    if (std::stoi(eval_bt(root, std::vformat(fmt, std::make_format_args(i))))){
-      fvals.push_back(std::vformat(fmt, std::make_format_args(i)));
+    std::string fval = std::vformat(fmt, std::make_format_args(i));
+
+    if (eval_bt(root, fval) == "1"){
+      fvals.push_back(fval);
     }
   }
 
@@ -76,7 +78,7 @@ struct TestArguments {
 };
 
 // TODO: allow this to take in fvals from cli, e.g. pipe
-TestArguments parse_args(int argc, char* argv[]) {
+TestArguments parse_test_args(int argc, char* argv[]) {
   TestArguments args;
 
   if (argc == 1) {
@@ -126,7 +128,7 @@ TestArguments parse_args(int argc, char* argv[]) {
 
 
 int main(int argc, char* argv[]) {
-  TestArguments args = parse_args(argc, argv);
+  TestArguments args = parse_test_args(argc, argv);
 
   // automated main program
   std::vector<std::string> values;
