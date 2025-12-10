@@ -147,3 +147,32 @@ And if there's anything you feel to be missing or if there's a very similar solu
 - TODO8: Add a `re-expand()` function to expand tree into collapsed list and then back out into the original list (more efficient than using the exhaustive test)
 - TODO9: improve outer interface and allow tree to be more searchable, perhaps reconstructing the original list or searching using gapped inputs?
 - TODO10: idk, any other [improvements](https://en.cppreference.com/w/cpp/utility/format/vformat) to the code
+
+### Possible Upgrade (TODO6.5)
+
+bt_compress with maps:
+
+First, could make a copy of the fvals as binary integers, and then use a mask to extract rvals from fvals (more efficient than creating new strings in memory).
+
+Then, could do a single pass through the list of rvals, adding them to a hashmap, `std::map<int, int[2]>`, where the `int`s being added are the 'index' of that fval in the list of fvals (they remain in provided order until build stage). No duplicates, so there can be a maximum of 2 matching fvals.
+
+If [0] >= 0 && [1] < 0 it is a unique rval, so we can leave it alone,
+if [0] >= 0 && [1] >= 0, we have a match:
+- [0] is marked with the current rval-index for sval conversion
+  - done in a single pass, later
+- [1] is marked for removal once the rval process is complete
+
+At end of an rval-pass, the outcomes from the minor map are migrated into a major map, which contains a struct that determines the sval conversion:
+```cpp
+struct RValConversion {
+   bool remove = false;
+   std::vector<int> x_indices;
+}
+```
+Then, the minor map can be cleared and used again.
+
+Once sval conversion has all been calculated, a single copying pass is done over the original fvals, with the RValConversion Map in hand:
+- if the index is to be removed, just don't copy it
+- else, update relevant indices with an `X` and move that string to the new vec
+
+From there, it's equivalent to before, but with a more time (and space?) efficient sval computation. So, this set of svals is sent to the Builder to build the tree with.
