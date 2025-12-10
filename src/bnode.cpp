@@ -1,4 +1,6 @@
+#include <iostream>
 #include "bnode.hpp"
+
 
 
 #pragma region Provided code
@@ -51,4 +53,18 @@ BNode* nodeCons(const std::string& data, BNode* l_ptr, BNode* r_ptr ) {
   new_root->val = data;
   new_root->right = r_ptr;
   return new_root;
+}
+
+
+void rec_print_bt(BNode* root, int layer) {
+  if (root == nullptr) {
+    return;
+  }
+  for (int i = 0; i < layer; i++) {
+    std::cout << "-\t";
+  }
+  std::cout << root->val << std::endl;
+  layer++;
+  rec_print_bt(root->left, layer);
+  rec_print_bt(root->right, layer);
 }

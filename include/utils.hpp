@@ -20,6 +20,6 @@ std::vector<std::pair<int, int>> findDuplicates(
 );
 
 // produces a copy of the input vector with duplicates removed
-std::vector<std::string> removeDuplicates(std::vector<std::string> &vec);
+std::vector<std::string> removeDuplicates(std::vector<std::string> vec);
 
 #endif

@@ -5,20 +5,8 @@
 #include <cmath>
 #include "builder.hpp"
 #include "booltree.hpp"
+#include "bnode.hpp"
 
-
-void rec_print_bt(BNode* root, int layer = 0){
-  if (root == nullptr){
-    return;
-  }
-  for (int i = 0; i < layer; i++){
-    std::cout << "-\t";
-  }
-  std::cout << root->val << std::endl;
-  layer++;
-  rec_print_bt(root->left, layer);
-  rec_print_bt(root->right, layer);
-}
 
 //remember to alter i < ? and {:0?b}, otherwise it won't work for other lengths of fvals
 void full_bin_test(BNode* root, const int &length){
@@ -76,7 +64,6 @@ std::string ranNonFval(const int &length, std::vector<std::string> &fvals){
   }
   return test_str;
 }
-//endregion
 
 
 // TODO: refactor and remove testing-related elements
@@ -150,7 +137,7 @@ int main(int argc, char* argv[]) {
 
   std::cout << "max: " << (pow(2, values[0].length() + 1) - 1) << " nodes :0" << std::endl;
 
-  BoolTree ft2(values);
+  BoolTree ft2(values, args.length);
   // this corresponds to the f(x1, x2, x3) example shown above
 
   std::cout << "constructed with " << ft2.n_nodes() << " nodes :)" << std::endl;

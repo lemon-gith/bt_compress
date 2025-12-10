@@ -3,32 +3,21 @@
 #include <cstdlib>
 #include <iostream>
 #include <cmath>
+#include "simplification.hpp"
 #include "booltree.hpp"
 #include "builder.hpp"
-
-
-
-void rec_print_bt(BNode* root, int layer = 0) {
-  if (root == nullptr) {
-    return;
-  }
-  for (int i = 0; i < layer; i++) {
-    std::cout << "-\t";
-  }
-  std::cout << root->val << std::endl;
-  layer++;
-  rec_print_bt(root->left, layer);
-  rec_print_bt(root->right, layer);
-}
+#include "bnode.hpp"
 
 
 // TODO: refactor and remove testing-related elements
 //        only permit user-inputted values here
 struct Arguments {
   bool read_from_txt = true;
-  std::string txt_location = "example.txt";
+  // location of the text file to read fvals from
+  std::string txt_location = "test/data/values.txt";
   bool print_tree = false;
   bool run_bin_test = false;
+  // input values
   std::vector<std::string> ivals;
 };
 
@@ -42,16 +31,19 @@ Arguments parse_args(int argc, char* argv[]) {
   } else if (
     (std::string(argv[1]) == "-h") || (std::string(argv[1]) == "--help")
   ) {  // help page
-    std::cout << "usage: ./bt_compress [\n"
-    << "  -f|--file <file>     : file to read fvals from\n"
-    << "  -l|--length <length> : length of generated fvals\n"
-    << "  -n|--number <number> : number of generated fvals\n"
-    << "  -p|--print           : print the produced binary tree\n"
-    << "  -b|--bin-test        : exhaustive test over all potential values\n"
+    std::cout << "usage: " << argv[0] << " [\n"
+    << "  -f|--file <file>     : "
+    << args.txt_location
+    << " : file to read fvals from\n"
+    // << "  -l|--length <length> : length of generated fvals\n"
+    // << "  -n|--number <number> : number of generated fvals\n"
+    << "  -p|--print           : false : print the produced binary tree\n"
+    << "  -b|--bin-test        : false "
+    << ": exhaustive test over all potential values\n"
     << "] [\n"
-    << "  <input> (501)        : a list of binary values to be compressed\n"
+    << "  <input>              : {NULL} "
+    << ": a list of binary values to be compressed\n"
     << "]\n\n"
-    << "- `length` and `number` are currently not working\n"
     << "- calling binary without args will use default values"
     << std::endl;
     exit(0);
@@ -60,11 +52,10 @@ Arguments parse_args(int argc, char* argv[]) {
   for (int i = 1; i < argc; i++) {
     std::string arg = argv[i];
     if (arg[0] != '-') {
-      // TODO: implement, could write a parsing fn (w/ whitespace trimming)
-      //        and make std::vector<std::string> ivals
-      std::cerr << "501: direct input not yet implemented" << std::endl;
-      std::cerr << arg << " is passed illegally" << std::endl;
-      exit(2);
+      if (arg[0] == '0' || arg[0] == '1') {  // likely a binary string
+        args.ivals.push_back(arg);
+        args.read_from_txt = false;
+      }
     }
     else if ((arg == "-f") || (arg == "--file")) {
       args.txt_location = argv[++i];
@@ -111,17 +102,16 @@ int main(int argc, char* argv[]) {
     values = args.ivals;
   }
 
-  std::cout << "\nmax: "
-  << (pow(2, values[0].length() + 1) - 1) << " nodes :0"
-  << std::endl;
+  // ensure that the provided fvals are valid
+  int val_length = border_control(values);
 
-  BoolTree ft2(values);
-  // this corresponds to the f(x1, x2, x3) example shown above
-  // TODO: ^ what is this referring to?
+  std::cout << "\nmax: " << (pow(2, values[0].length() + 1) - 1)
+    << " nodes :0" << std::endl;
+
+  BoolTree ft2(values, val_length);
 
   std::cout << "constructed with " << ft2.n_nodes() << " nodes :)" << std::endl;
 
-  // TODO: rewrite this to be a bit more useful
   if ((args.read_from_txt) && (args.txt_location == "test/data/values.txt")) {
     std::cout << ft2.eval("0011001010") << std::endl;
     // this should print "0"
@@ -133,7 +123,6 @@ int main(int argc, char* argv[]) {
   if (args.print_tree) {
     std::cout << "behold, the tree: \n" << std::endl;
 
-    // TODO: make this a method of BoolTree
     BNode* beetroot = ft2.showRoot();
 
     rec_print_bt(beetroot);
@@ -142,12 +131,45 @@ int main(int argc, char* argv[]) {
 
   if (args.run_bin_test) {
     std::cout << std::endl;
-    std::cout << "now running a full check of which fvals are represented by the tree:\n" << std::endl;
+    std::cout
+      << "Please enter the values you would like to test (one-by-one), "
+      << "or type 'exit' to quit:\n" << std::endl;
 
-    // BNode* beetroot = ft2.showRoot();
+    bool exit = false;
+    while (!exit) {
+      bool valid_fval = true;
+      std::string test_val;
+      std::cout << "> ";
+      std::cin >> test_val;
 
-    // TODO: make this take in object pointer and call eval method
-    // full_bin_test(beetroot, length);
+      for (char& c : test_val) {
+        if (c != '0' && c != '1') {
+          valid_fval = false;
+          break;
+        }
+      }
+
+      if (valid_fval) {
+        std::string result = ft2.eval(test_val);
+
+        if (result == "0" || result == "1") {
+          std::cout << "Result: " << (result == "0" ? "false" : "true")
+            << std::endl;
+        } else {
+          std::cout << result << std::endl;
+        }
+
+      } else {
+        if (test_val == "exit") {
+          exit = true;
+          std::cout << "Exiting interactive binary test.\n" << std::endl;
+        } else {
+          std::cout << "Err: Invalid fval entered, please try again."
+            << std::endl;
+        }
+      }
+    }
+
     std::cout << std::endl;
   }
 

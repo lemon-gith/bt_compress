@@ -206,9 +206,9 @@ BNode* build_bt(const std::vector<std::string>& fvalues){
     return nullptr;
   }
 
-  std::vector<std::string> sanitised_fvals = border_control(fvalues);
+  std::vector<std::string> unique_fvals = removeDuplicates(fvalues);
 
-  Builder Bob(simplifyFvals(sanitised_fvals));
+  Builder Bob(simplifyFvals(unique_fvals));
 
   BNode* bt_root = constructBT(Bob);
   add_0s(bt_root);

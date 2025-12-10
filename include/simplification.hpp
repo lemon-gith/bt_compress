@@ -15,6 +15,6 @@ void collapseSimilar(
 std::vector<std::string> simplifyFvals(std::vector<std::string> fvals);
 
 // function to sanitise the input data
-std::vector<std::string> border_control(std::vector<std::string> fvals);
+int border_control(std::vector<std::string> fvals);
 
 #endif

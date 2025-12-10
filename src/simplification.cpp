@@ -71,11 +71,11 @@ std::vector<std::string> simplifyFvals(std::vector<std::string> fvals) {
   return fvals;
 }
 
-std::vector<std::string> border_control(std::vector<std::string> fvals) {
-  int length = int(fvals[0].size());
+int border_control(std::vector<std::string> fvals) {
+  int length = int((fvals)[0].size());
 
   // perform a checked type conversion
-  unsigned long label_len_ul = fvals[0].size();
+  unsigned long label_len_ul = (fvals)[0].size();
   if (label_len_ul > (__INT32_MAX__ - 1)) {
     // `-1` as label can be up to (fval length + 1)
     throw std::length_error("fvals are too long for int");;
@@ -93,5 +93,5 @@ std::vector<std::string> border_control(std::vector<std::string> fvals) {
     }
   }
 
-  return removeDuplicates(fvals);
+  return length;
 }

@@ -30,4 +30,7 @@ BNode* nodeCons(
   const std::string& data, BNode* l_ptr = nullptr, BNode* r_ptr = nullptr
 );
 
+// recursively prints the binary tree structure to standard output
+void rec_print_bt(BNode* root, int layer = 0);
+
 #endif
